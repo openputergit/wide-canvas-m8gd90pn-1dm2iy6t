@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrutalCanvas - Business Model Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brutal: {
+                            black: '#000000',
+                            white: '#ffffff',
+                            yellow: '#F9F871',
+                            pink: '#FF90E8',
+                            blue: '#7DF9FF',
+                            green: '#00FF66',
+                            red: '#FF3F3F'
+                        }
+                    },
+                    fontFamily: {
+                        'brutal': ['Space Mono', 'monospace'],
+                        'brutal-body': ['Work Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background-color: #F5F5F5;
+        }
+        .brutal-box {
+            background-color: white;
+            border: 3px solid black;
+            box-shadow: 5px 5px 0px #000000;
+            transition: all 0.2s ease;
+        }
+        .brutal-box:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0px #000000;
+        }
+        .brutal-button {
+            background-color: white;
+            border: 3px solid black;
+            box-shadow: 3px 3px 0px #000000;
+            transition: all 0.1s ease;
+            font-family: 'Space Mono', monospace;
+        }
+        .brutal-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #000000;
+        }
+        .brutal-button:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0px #000000;
+        }
+        .brutal-input {
+            background-color: white;
+            border: 3px solid black;
+            box-shadow: 3px 3px 0px #000000;
+            font-family: 'Space Mono', monospace;
+        }
+        .brutal-input:focus {
+            outline: none;
+            box-shadow: 4px 4px 0px #000000;
+        }
+        .brutal-pink {
+            background-color: #FF90E8;
+        }
+        .brutal-yellow {
+            background-color: #F9F871;
+        }
+        .brutal-blue {
+            background-color: #7DF9FF;
+        }
+        .brutal-green {
+            background-color: #00FF66;
+        }
+        .loading-animation {
+            display: none;
+            width: 80px;
+            height: 80px;
+        }
+        .loading-animation:after {
+            content: " ";
+            display: block;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            border-radius: 0;
+            border: 6px solid #000;
+            border-color: #000 transparent #000 transparent;
+            animation: loading-animation 1.2s linear infinite;
+        }
+        @keyframes loading-animation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .brutal-canvas-section {
+            background-color: white;
+            border: 2px solid black;
+            transition: all 0.2s ease;
+        }
+        .brutal-canvas-section:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #000000;
+        }
+        .brutal-section-title {
+            font-family: 'Space Mono', monospace;
+            border-bottom: 2px solid black;
+            padding-bottom: 5px;
+        }
+        .brutal-radio {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid black;
+            transition: all 0.1s ease-in-out;
+        }
+        .brutal-radio:checked {
+            background-color: black;
+            box-shadow: inset 0 0 0 3px white;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="bg-white border-b-2 border-black sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" class="lucide lucide-boxes">
+                      <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/>
+                      <path d="m7 16.5-4.74-2.85"/>
+                      <path d="m7 16.5 5-3"/>
+                      <path d="M7 16.5v5.17"/>
+                      <path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/>
+                      <path d="m17 16.5-5-3"/>
+                      <path d="m17 16.5 4.74-2.85"/>
+                      <path d="M17 16.5v5.17"/>
+                      <path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/>
+                      <path d="M12 8 7.26 5.15"/>
+                      <path d="m12 8 4.74-2.85"/>
+                      <path d="M12 13.5V8"/>
+                    </svg>
+                    <span class="ml-2 text-xl font-bold font-brutal tracking-tight">BRUTAL<span class="text-brutal-pink">CANVAS</span></span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="brutal-button px-4 py-2 text-sm font-bold">SIGN_IN</button>
+                    <button class="brutal-button brutal-blue px-4 py-2 text-sm font-bold">GET_STARTED</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4 font-brutal">BUSINESS MODEL ARCHITECT</h1>
+            <p class="text-xl text-gray-700 font-brutal-body">Generate innovative business models with our AI-powered system</p>
+            <div class="w-24 h-1 bg-black mx-auto mt-4"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="brutal-box p-6 rounded-none">
+                <h2 class="text-2xl font-bold mb-6 font-brutal">CREATE YOUR MODEL</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-2 font-brutal">BUSINESS NAME</label>
+                        <input type="text" id="businessName" placeholder="ACME Corporation" class="brutal-input p-2 w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 font-brutal">INDUSTRY</label>
+                        <select id="industry" class="brutal-input p-2 w-full">
+                            <option>Technology</option>
+                            <option>Retail</option>
+                            <option>Healthcare</option>
+                            <option>Education</option>
+                            <option>Fashion</option>
+                            <option>Food & Beverage</option>
+                            <option>Entertainment</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 font-brutal">BUSINESS DESCRIPTION</label>
+                        <textarea id="description" rows="4" placeholder="Describe your business idea..." class="brutal-input p-2 w-full font-brutal-body"></textarea>
+                    </div>
+                    <div class="mt-6">
+                        <label class="block text-sm font-bold mb-2 font-brutal">MODEL STYLE</label>
+                        <div class="flex space-x-4">
+                            <div class="flex items-center">
+                                <input type="radio" name="style" value="standard" class="brutal-radio" checked>
+                                <span class="ml-2">STANDARD</span>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" name="style" value="minimal" class="brutal-radio">
+                                <span class="ml-2">MINIMAL</span>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" name="style" value="colorful" class="brutal-radio">
+                                <span class="ml-2">COLORED</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="generateBtn" onclick="generateModel()" class="w-full brutal-button brutal-pink px-4 py-3 font-bold mt-4 flex items-center justify-center">
+                        <span>GENERATE MODEL</span>
+                        <i class="bi bi-lightning-charge-fill ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="brutal-box p-6 rounded-none">
+                <h2 class="text-2xl font-bold mb-6 font-brutal">CANVAS OUTPUT</h2>
+                <div id="loading" class="loading-animation mx-auto my-12"></div>
+                <div id="canvas" class="grid grid-cols-2 gap-4">
+                    <p id="emptyState" class="text-center col-span-2 py-16 text-gray-500 italic font-brutal-body">Enter your business details to generate a model...</p>
+                    <!-- Canvas sections will be dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="brutal-box brutal-yellow p-6 rounded-none">
+                <div class="text-black text-4xl mb-2">
+                    <i class="bi bi-lightbulb-fill"></i>
+                </div>
+                <h3 class="text-xl font-bold mt-4 font-brutal">AI-POWERED INSIGHTS</h3>
+                <p class="text-gray-800 mt-2 font-brutal-body">Advanced algorithms generate cutting-edge business strategies based on your inputs</p>
+            </div>
+            <div class="brutal-box brutal-blue p-6 rounded-none">
+                <div class="text-black text-4xl mb-2">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <h3 class="text-xl font-bold mt-4 font-brutal">TEAM COLLABORATION</h3>
+                <p class="text-gray-800 mt-2 font-brutal-body">Share your business model with team members and gather feedback in real-time</p>
+            </div>
+            <div class="brutal-box brutal-green p-6 rounded-none">
+                <div class="text-black text-4xl mb-2">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h3 class="text-xl font-bold mt-4 font-brutal">DATA INSIGHTS</h3>
+                <p class="text-gray-800 mt-2 font-brutal-body">Track your business performance with easy-to-understand visualizations</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white py-8 mt-12 border-t-2 border-black">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="font-brutal-body">POWERED BY <span class="font-bold">BRUTALCANVAS</span> // VERSION 2.0.77</p>
+            <div class="flex justify-center mt-4 space-x-6">
+                <a href="#" class="text-black hover:text-brutal-pink transition-colors duration-300">
+                    <i class="bi bi-twitter"></i>
+                </a>
+                <a href="#" class="text-black hover:text-brutal-pink transition-colors duration-300">
+                    <i class="bi bi-telegram"></i>
+                </a>
+                <a href="#" class="text-black hover:text-brutal-pink transition-colors duration-300">
+                    <i class="bi bi-discord"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const canvasOptions = [
+            'Key Partners', 'Key Activities', 'Value Propositions',
+            'Customer Relationships', 'Customer Segments', 'Key Resources',
+            'Channels', 'Cost Structure', 'Revenue Streams'
+        ];
+
+        // AI model data for different industries
+        const aiModels = {
+            "Technology": {
+                "Key Partners": ["Software developers", "Cloud providers", "Tech talent agencies", "Digital marketers"],
+                "Key Activities": ["Product development", "User experience design", "Technical support", "Software updates"],
+                "Value Propositions": ["Cutting-edge solutions", "Time-saving automation", "Enhanced productivity", "Seamless integration"],
+                "Customer Relationships": ["Online support portals", "24/7 customer service", "Community forums", "Dedicated account managers"],
+                "Customer Segments": ["Enterprise businesses", "Startups", "Tech enthusiasts", "Government agencies"],
+                "Key Resources": ["Development team", "IT infrastructure", "Intellectual property", "User data"],
+                "Channels": ["Direct online sales", "App marketplaces", "B2B partnerships", "Tech conferences"],
+                "Cost Structure": ["Development costs", "Server expenses", "Marketing", "Support team"],
+                "Revenue Streams": ["Subscription model", "Licensing fees", "Premium features", "API access fees"]
+            },
+            "Retail": {
+                "Key Partners": ["Manufacturers", "Logistics providers", "Payment processors", "Merchandisers"],
+                "Key Activities": ["Inventory management", "Customer service", "Store operations", "Trend forecasting"],
+                "Value Propositions": ["Quality products", "Unique selection", "Convenient shopping", "Personalized service"],
+                "Customer Relationships": ["Loyalty programs", "In-store assistance", "Customer feedback", "Social engagement"],
+                "Customer Segments": ["Budget shoppers", "Premium consumers", "Convenience seekers", "Trend followers"],
+                "Key Resources": ["Retail locations", "Inventory", "Sales staff", "Brand recognition"],
+                "Channels": ["Physical stores", "E-commerce site", "Mobile app", "Social shopping"],
+                "Cost Structure": ["Inventory costs", "Retail space", "Staff salaries", "Marketing campaigns"],
+                "Revenue Streams": ["Direct sales", "Membership fees", "Service add-ons", "Special events"]
+            },
+            "Healthcare": {
+                "Key Partners": ["Medical suppliers", "Insurance providers", "Pharmaceutical companies", "Medical schools"],
+                "Key Activities": ["Patient care", "Medical research", "Health education", "Compliance management"],
+                "Value Propositions": ["Quality care", "Innovative treatments", "Pain management", "Health optimization"],
+                "Customer Relationships": ["Continuous monitoring", "Patient education", "Health tracking", "Preventative guidance"],
+                "Customer Segments": ["Patients with chronic conditions", "Corporate employees", "Senior citizens", "Health-conscious individuals"],
+                "Key Resources": ["Medical professionals", "Clinical facilities", "Medical equipment", "Patient data"],
+                "Channels": ["Clinics & hospitals", "Telehealth", "Mobile health units", "Health portals"],
+                "Cost Structure": ["Medical staff", "Equipment", "Facility maintenance", "Insurance"],
+                "Revenue Streams": ["Insurance billing", "Direct payments", "Subscription care", "Specialized treatments"]
+            },
+            "Education": {
+                "Key Partners": ["Content creators", "Educational institutions", "Certification bodies", "Corporate trainers"],
+                "Key Activities": ["Curriculum development", "Course delivery", "Student assessment", "Learning environment creation"],
+                "Value Propositions": ["Quality education", "Career advancement", "Skill development", "Knowledge acquisition"],
+                "Customer Relationships": ["Mentorship", "Academic advising", "Tutoring services", "Professional networking"],
+                "Customer Segments": ["K-12 students", "University students", "Career changers", "Professional development"],
+                "Key Resources": ["Educators", "Learning materials", "Educational platforms", "Accreditations"],
+                "Channels": ["Campuses", "Online learning platforms", "Mobile learning apps", "Educational events"],
+                "Cost Structure": ["Instructor salaries", "Platform development", "Content creation", "Marketing"],
+                "Revenue Streams": ["Tuition fees", "Certification programs", "Corporate training", "Learning materials"]
+            },
+            "Fashion": {
+                "Key Partners": ["Textile suppliers", "Fashion designers", "Manufacturers", "Influencers"],
+                "Key Activities": ["Design", "Production", "Brand marketing", "Trend analysis"],
+                "Value Propositions": ["Unique designs", "Quality materials", "Fashion-forward styles", "Self-expression"],
+                "Customer Relationships": ["Style consulting", "Virtual fitting rooms", "Fashion advice", "Brand loyalty"],
+                "Customer Segments": ["Luxury shoppers", "Fashion enthusiasts", "Sustainable fashion buyers", "Trend followers"],
+                "Key Resources": ["Design team", "Brand identity", "Materials", "Production facilities"],
+                "Channels": ["Retail stores", "E-commerce", "Specialty boutiques", "Fashion shows"],
+                "Cost Structure": ["Design costs", "Material sourcing", "Manufacturing", "Fashion marketing"],
+                "Revenue Streams": ["Retail sales", "Limited collections", "Custom designs", "Accessories"]
+            },
+            "Food & Beverage": {
+                "Key Partners": ["Food suppliers", "Kitchen equipment", "Delivery services", "Farms"],
+                "Key Activities": ["Food preparation", "Recipe development", "Quality control", "Service delivery"],
+                "Value Propositions": ["Delicious taste", "Unique flavors", "Culinary experience", "Convenience"],
+                "Customer Relationships": ["Taste profiling", "Loyalty programs", "Feedback collection", "Culinary education"],
+                "Customer Segments": ["Foodies", "Busy professionals", "Health-conscious eaters", "Special occasion diners"],
+                "Key Resources": ["Chefs", "Recipes", "Kitchen facilities", "Dining space"],
+                "Channels": ["Restaurants", "Food delivery", "Food trucks", "Catering"],
+                "Cost Structure": ["Food costs", "Staff wages", "Facility costs", "Marketing"],
+                "Revenue Streams": ["Menu sales", "Beverage programs", "Catering services", "Merchandise"]
+            },
+            "Entertainment": {
+                "Key Partners": ["Content creators", "Distribution platforms", "Talent agencies", "Production studios"],
+                "Key Activities": ["Content production", "Audience engagement", "Marketing campaigns", "Rights management"],
+                "Value Propositions": ["Engaging experiences", "Exclusive content", "Emotional connection", "Escapism"],
+                "Customer Relationships": ["Fan communities", "Membership programs", "Interactive events", "Personalized recommendations"],
+                "Customer Segments": ["Content subscribers", "Live event attendees", "Entertainment enthusiasts", "Niche communities"],
+                "Key Resources": ["Creative talent", "IP rights", "Production equipment", "Distribution channels"],
+                "Channels": ["Streaming platforms", "Venues", "Apps", "Social media"],
+                "Cost Structure": ["Production costs", "Talent fees", "Marketing", "Platform maintenance"],
+                "Revenue Streams": ["Subscriptions", "Ticket sales", "Advertising", "Merchandise"]
+            },
+            "Other": {
+                "Key Partners": ["Strategic suppliers", "Industry specialists", "Marketing agencies", "Financial institutions"],
+                "Key Activities": ["Core operations", "Service delivery", "Development", "Customer acquisition"],
+                "Value Propositions": ["Unique solution", "Problem-solving", "Enhanced experience", "Specialized value"],
+                "Customer Relationships": ["Direct communication", "Self-service", "Community building", "Customer support"],
+                "Customer Segments": ["Primary market", "Secondary market", "Niche segments", "Early adopters"],
+                "Key Resources": ["Key personnel", "Core assets", "Proprietary technology", "Industry relationships"],
+                "Channels": ["Direct sales", "Online platforms", "Partners", "Industry networks"],
+                "Cost Structure": ["Operational expenses", "Fixed costs", "Marketing", "Customer acquisition"],
+                "Revenue Streams": ["Direct sales", "Subscription fees", "Service fees", "Licensing"]
+            }
+        };
+
+        // Adjectives to enhance business model entries
+        const businessAdjectives = [
+            "innovative", "disruptive", "strategic", "premium", "optimized",
+            "sustainable", "efficient", "specialized", "integrated", "scalable"
+        ];
+
+        function getRandomAdjective() {
+            return businessAdjectives[Math.floor(Math.random() * businessAdjectives.length)];
+        }
+
+        function getRandomColors() {
+            const colors = ['brutal-yellow', 'brutal-pink', 'brutal-blue', 'brutal-green'];
+            // Shuffle array
+            return [...colors].sort(() => 0.5 - Math.random());
+        }
+
+        function generateModel() {
+            const businessName = document.getElementById('businessName').value;
+            const industry = document.getElementById('industry').value;
+            const description = document.getElementById('description').value;
+            const styleOptions = document.getElementsByName('style');
+            let selectedStyle = 'standard';
+            
+            for (const option of styleOptions) {
+                if (option.checked) {
+                    selectedStyle = option.value;
+                    break;
+                }
+            }
+
+            if (!businessName || !description) {
+                alert('ERROR: Please fill in both business name and description fields.');
+                return;
+            }
+
+            // Show loading animation and hide empty state message
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('canvas').innerHTML = '';
+            document.getElementById('generateBtn').disabled = true;
+            
+            // Simulate AI processing time
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
+                
+                const canvas = document.getElementById('canvas');
+                canvas.innerHTML = '';
+
+                // Get the AI model for the selected industry
+                const modelData = aiModels[industry];
+                
+                // Get random colors for colored style
+                const colors = getRandomColors();
+                let colorIndex = 0;
+
+                // Create canvas sections based on the selected style
+                canvasOptions.forEach(option => {
+                    const section = document.createElement('div');
+                    
+                    // Apply different styles based on selection
+                    if (selectedStyle === 'minimal') {
+                        section.className = 'border-2 border-black p-4 bg-white';
+                    } else if (selectedStyle === 'colorful') {
+                        section.className = `${colors[colorIndex % colors.length]} border-2 border-black p-4`;
+                        colorIndex++;
+                    } else {
+                        section.className = 'brutal-canvas-section p-4';
+                    }
+                    
+                    const sectionData = modelData[option];
+                    let content = '';
+                    
+                    if (sectionData && sectionData.length > 0) {
+                        content = '<ul class="mt-2 text-sm font-brutal-body">';
+                        sectionData.forEach(item => {
+                            // Add business adjectives to some of the items
+                            if (Math.random() > 0.5) {
+                                item = item.replace(/^(\w+)/, `${getRandomAdjective()} $1`);
+                            }
+                            content += `<li class="mb-1">• ${item}</li>`;
+                        });
+                        content += '</ul>';
+                    }
+                    
+                    section.innerHTML = `
+                        <h4 class="font-bold text-sm brutal-section-title">${option.toUpperCase()}</h4>
+                        ${content}
+                        <button class="mt-3 text-sm hover:underline flex items-center font-brutal text-xs">
+                            <i class="bi bi-pencil-square mr-1"></i> EDIT
+                        </button>
+                    `;
+                    canvas.appendChild(section);
+                });
+                
+                // Add header
+                const header = document.createElement('div');
+                if (selectedStyle === 'colorful') {
+                    header.className = 'col-span-2 brutal-pink border-2 border-black p-4 mb-2 text-center';
+                } else {
+                    header.className = 'col-span-2 bg-white border-2 border-black p-4 mb-2 text-center';
+                }
+                
+                header.innerHTML = `
+                    <h3 class="font-bold text-xl font-brutal">${businessName.toUpperCase()}</h3>
+                    <p class="text-sm mt-1 font-brutal-body">BUSINESS MODEL CANVAS</p>
+                `;
+                canvas.insertBefore(header, canvas.firstChild);
+                
+                // Add export options
+                const exportOptions = document.createElement('div');
+                exportOptions.className = 'col-span-2 bg-white border-2 border-black p-3 mt-4 flex justify-center space-x-3';
+                exportOptions.innerHTML = `
+                    <button class="brutal-button px-3 py-1 text-sm flex items-center font-brutal">
+                        <i class="bi bi-download mr-1"></i> EXPORT PDF
+                    </button>
+                    <button class="brutal-button px-3 py-1 text-sm flex items-center font-brutal">
+                        <i class="bi bi-share mr-1"></i> SHARE
+                    </button>
+                    <button class="brutal-button brutal-pink px-3 py-1 text-sm flex items-center font-brutal">
+                        <i class="bi bi-magic mr-1"></i> OPTIMIZE
+                    </button>
+                `;
+                canvas.appendChild(exportOptions);
+                
+            }, 2000); // 2 seconds loading time
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            document.getElementById('emptyState').style.display = 'block';
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
